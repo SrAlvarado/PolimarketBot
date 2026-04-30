@@ -1,14 +1,13 @@
 import os
 import json
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from dotenv import load_dotenv
 
 load_dotenv()
 
 # Configurar API Key
 api_key = os.environ.get("GEMINI_API_KEY")
-if api_key:
-    genai.configure(api_key=api_key)
 
 def analyze_markets(portfolio_balance, markets_data, performance_history=""):
     """
@@ -17,6 +16,8 @@ def analyze_markets(portfolio_balance, markets_data, performance_history=""):
     if not api_key:
         print("Error: GEMINI_API_KEY no encontrada en variables de entorno o archivo .env")
         return []
+
+    client = genai.Client(api_key=api_key)
 
     system_prompt = f"""
     Actúa como un Analista de Riesgos Cuantitativo para un bot de Paper Trading.
@@ -54,11 +55,12 @@ def analyze_markets(portfolio_balance, markets_data, performance_history=""):
     """
 
     try:
-        model = genai.GenerativeModel('gemini-pro')
-        response = model.generate_content(
-            system_prompt + "\n\n" + user_prompt,
-            generation_config=genai.GenerationConfig(
-                temperature=0.2
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=system_prompt + "\n\n" + user_prompt,
+            config=types.GenerateContentConfig(
+                temperature=0.2,
+                response_mime_type="application/json"
             )
         )
         
@@ -92,8 +94,8 @@ if __name__ == "__main__":
             "volume": 100000
         }
     ]
-    if os.environ.get("GEMINI_API_KEY"):
-        res = analyze_markets(1000.0, test_markets)
+    if api_key:
+        res = analyze_markets(1000.0, test_markets, "Sin historial todavía.")
         print("Gemini decision:", json.dumps(res, indent=2))
     else:
         print("Setea GEMINI_API_KEY en .env para probar.")
