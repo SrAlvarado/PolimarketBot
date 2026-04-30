@@ -3,12 +3,15 @@ import json
 
 BASE_URL = "https://gamma-api.polymarket.com"
 
-def get_active_markets(limit=5):
+def get_active_markets(limit=5, exclude_ids=None):
     """
     Fetches active markets. Sorts them internally or just grabs popular ones.
     Using events endpoint with active=true
     """
-    url = f"{BASE_URL}/events?active=true&closed=false&limit=20"
+    if exclude_ids is None:
+        exclude_ids = []
+        
+    url = f"{BASE_URL}/events?active=true&closed=false&limit=40"
     try:
         response = requests.get(url, timeout=10)
         response.raise_for_status()
@@ -19,6 +22,8 @@ def get_active_markets(limit=5):
             if 'markets' in event:
                 for m in event['markets']:
                     if m.get('active') and not m.get('closed'):
+                        if m['id'] in exclude_ids:
+                            continue
                         # Solo mercados de tipo binario con liquidez
                         outcomes = json.loads(m.get('outcomes', '[]'))
                         if len(outcomes) == 2 and m.get('bestBid') and m.get('bestAsk'):

@@ -54,7 +54,8 @@ def run_cycle():
         
     # 3. Buscar nuevos mercados
     print_info("Buscando mercados activos populares...")
-    markets = market_api.get_active_markets(limit=5)
+    open_market_ids = [p['market_id'] for p in open_positions]
+    markets = market_api.get_active_markets(limit=5, exclude_ids=open_market_ids)
     
     if not markets:
         print_warning("No se encontraron mercados activos o hubo un error en la API.")
@@ -128,8 +129,8 @@ if __name__ == "__main__":
     while True:
         try:
             run_cycle()
-            # Esperar 60 segundos para el próximo ciclo
-            sleep_time = 60
+            # Esperar 150 segundos para el próximo ciclo
+            sleep_time = 150
             print_info(f"Esperando {sleep_time} segundos para el próximo ciclo...")
             time.sleep(sleep_time)
         except KeyboardInterrupt:
