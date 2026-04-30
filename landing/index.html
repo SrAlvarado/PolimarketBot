@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PolyBot AI - Autonomous Paper Trading</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <meta name="description" content="PolyBot AI - An autonomous, AI-driven paper trading bot for Polymarket using Google Gemini.">
+</head>
+<body>
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">
+            <span class="gradient-text">PolyBot AI</span>
+        </div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How it Works</a>
+            <a href="https://github.com/SrAlvarado/PolimarketBot" target="_blank" class="btn-primary">View GitHub</a>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <div class="hero-content">
+            <div class="badge">🚀 v1.0 is live on GitHub</div>
+            <h1 class="hero-title">Dominate Polymarket with <br><span class="gradient-text">AI Precision</span></h1>
+            <p class="hero-subtitle">An autonomous paper trading bot powered by Google Gemini. It analyzes odds, calculates risks, and executes trades while you sleep.</p>
+            <div class="cta-group">
+                <a href="https://github.com/SrAlvarado/PolimarketBot" class="btn-primary large">Start Trading Now</a>
+                <a href="#demo" class="btn-secondary large">View Live Stats</a>
+            </div>
+        </div>
+        
+        <div class="hero-visual">
+            <div class="glass-card main-dashboard">
+                <div class="dashboard-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                    <span class="status-text">main.py - Live Execution</span>
+                </div>
+                <div class="dashboard-body">
+                    <div class="log-line info">[INFO] Iniciando nuevo ciclo de evaluación...</div>
+                    <div class="log-line info">[INFO] Buscando mercados activos populares...</div>
+                    <div class="log-line info">[INFO] Consultando al cerebro (Gemini)...</div>
+                    <div class="log-line success">[SUCCESS] Inversión Ejecutada: $25.00 en 'Bitcoin to 100k?' (Decisión: Yes)</div>
+                    <div class="log-line warning">   Justificación IA: Alto volumen y tendencia alcista en los últimos 7 días. Riesgo aceptable.</div>
+                    <div class="log-line balance">>> Saldo Actual: $1025.50 USD | PnL Histórico: <span class="green-text">+$25.50 USD</span></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <section id="features" class="features-section">
+        <h2 class="section-title">Why PolyBot AI?</h2>
+        <div class="features-grid">
+            <div class="feature-card glass-card">
+                <div class="icon-wrapper">🧠</div>
+                <h3>Gemini Brain</h3>
+                <p>Uses advanced LLMs as quantitative risk analysts to interpret market sentiment and odds.</p>
+            </div>
+            <div class="feature-card glass-card">
+                <div class="icon-wrapper">📊</div>
+                <h3>Autonomous Loop</h3>
+                <p>Runs 24/7. Scans Polymarket, filters by volume, and invests autonomously in paper-trading mode.</p>
+            </div>
+            <div class="feature-card glass-card">
+                <div class="icon-wrapper">💼</div>
+                <h3>Portfolio Manager</h3>
+                <p>Built-in SQLite database to track your $1000 virtual balance, open positions, and total PnL.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>© 2026 PolyBot AI by SrAlvarado. Open Source under MIT License.</p>
+    </footer>
+
+    <script>
+        // Simple entry animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('animate-up');
+            });
+        });
+    </script>
+</body>
+</html>
