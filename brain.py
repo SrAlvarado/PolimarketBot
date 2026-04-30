@@ -10,30 +10,36 @@ api_key = os.environ.get("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
 
-def analyze_markets(portfolio_balance, markets_data):
+def analyze_markets(portfolio_balance, markets_data, performance_history=""):
     """
-    Envía los mercados activos y el balance actual a Gemini para que tome una decisión de inversión.
+    Envía los mercados activos, el balance actual y el historial de rendimiento a Gemini para que tome una decisión de inversión.
     """
     if not api_key:
         print("Error: GEMINI_API_KEY no encontrada en variables de entorno o archivo .env")
         return []
 
-    system_prompt = """
+    system_prompt = f"""
     Actúa como un Analista de Riesgos Cuantitativo para un bot de Paper Trading.
     Tienes un saldo disponible y una lista de mercados activos de Polymarket con sus probabilidades actuales (bestBid/bestAsk).
     Tu objetivo es analizar los mercados y elegir en cuáles invertir, buscando maximizar el retorno esperado (PnL).
+    
+    HISTORIAL DE RENDIMIENTO (Feedback Loop):
+    Aquí tienes el resultado de tus últimas decisiones:
+    {performance_history}
+    
+    Aprende de este historial. Si estás perdiendo, vuelve tu estrategia más conservadora o busca mercados con mayor volumen/probabilidad. Si estás ganando, mantén o ajusta el riesgo.
     También puedes decidir no invertir en un mercado si el riesgo es alto o la probabilidad no justifica el pago.
     No inviertas más del 20% del balance total en una sola iteración para diversificar.
     
     RESPONDE ESTRICTAMENTE EN FORMATO JSON. No incluyas explicaciones fuera del JSON, no uses bloques de código markdown (```json).
     Solo devuelve un array de objetos JSON con esta estructura exacta para cada decisión de inversión que tomes:
     [
-        {
+        {{
             "mercado_id": "ID_DEL_MERCADO",
             "decision": "Yes", // o "No"
             "cantidad_usd_a_invertir": 10.5,
-            "razonamiento_breve": "Breve justificación de la decisión"
-        }
+            "razonamiento_breve": "Breve justificación de la decisión, mencionando cómo el historial afectó la elección"
+        }}
     ]
     Si decides no invertir en ninguno, devuelve un array vacío: []
     """

@@ -60,9 +60,10 @@ def run_cycle():
         print_warning("No se encontraron mercados activos o hubo un error en la API.")
         return
         
-    # 4. Consultar a Gemini
+    # 4. Consultar a Gemini (Feedback Loop)
     print_info("Consultando al cerebro (Gemini)...")
-    decisions = brain.analyze_markets(balance, markets)
+    performance_history = portfolio.get_recent_performance(limit=5)
+    decisions = brain.analyze_markets(balance, markets, performance_history)
     
     if not decisions:
         print_info("Gemini decidió no invertir en ningún mercado en este ciclo o hubo un error.")

@@ -41,18 +41,33 @@
                 <div class="kpi-value" id="kpi-pnl">$0.00</div>
             </div>
             <div class="kpi-card glass-card">
+                <h3>Win Rate</h3>
+                <div class="kpi-value" id="kpi-winrate">0%</div>
+            </div>
+            <div class="kpi-card glass-card">
                 <h3>Posiciones Abiertas</h3>
                 <div class="kpi-value" id="kpi-open">0</div>
             </div>
         </div>
 
         <!-- Chart Section -->
-        <div class="chart-section glass-card">
-            <div class="section-header">
-                <h2>Crecimiento de Cartera</h2>
+        <div class="charts-grid">
+            <div class="chart-section glass-card">
+                <div class="section-header">
+                    <h2>Crecimiento de Cartera</h2>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="balanceChart"></canvas>
+                </div>
             </div>
-            <div class="canvas-container">
-                <canvas id="balanceChart"></canvas>
+            
+            <div class="chart-section glass-card donut-section">
+                <div class="section-header">
+                    <h2>Distribución</h2>
+                </div>
+                <div class="canvas-container donut-container">
+                    <canvas id="distributionChart"></canvas>
+                </div>
             </div>
         </div>
 

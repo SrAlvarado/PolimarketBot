@@ -49,8 +49,11 @@ h1, h2, h3, .logo { font-family: 'Outfit', sans-serif; }
 .text-danger { color: var(--danger); }
 
 /* Chart */
-.chart-section { width: 100%; }
-.canvas-container { position: relative; height: 400px; width: 100%; }
+.charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+@media (max-width: 1024px) { .charts-grid { grid-template-columns: 1fr; } }
+.chart-section { width: 100%; display: flex; flex-direction: column; }
+.canvas-container { position: relative; height: 350px; width: 100%; flex-grow: 1; }
+.donut-container { height: 300px; display: flex; justify-content: center; align-items: center; }
 
 /* Tables */
 .tables-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }

@@ -133,6 +133,26 @@ def get_total_pnl():
     conn.close()
     return total if total else 0.0
 
+def get_recent_performance(limit=5):
+    """
+    Devuelve un resumen de las últimas operaciones resueltas para que la IA aprenda.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT market_title, decision, pnl FROM positions WHERE status = 'CLOSED' ORDER BY id DESC LIMIT ?", (limit,))
+    history = cursor.fetchall()
+    conn.close()
+    
+    if not history:
+        return "Aún no hay historial de operaciones resueltas."
+        
+    summary = []
+    for title, decision, pnl in history:
+        result = "GANADO" if pnl > 0 else "PERDIDO"
+        summary.append(f"- Mercado: '{title}' | Decisión: {decision} | Resultado: {result} (PnL: ${pnl:.2f})")
+        
+    return "\n".join(summary)
+
 def get_dashboard_stats():
     """
     Retorna un diccionario con todas las estadísticas para el Dashboard.
@@ -148,13 +168,24 @@ def get_dashboard_stats():
     cursor.execute("SELECT balance, timestamp FROM balance_history ORDER BY id ASC")
     history = cursor.fetchall()
     
-    # Posiciones abiertas
+    # Posiciones abiertas y capital invertido
     cursor.execute("SELECT market_title, decision, invested_usd, shares, timestamp FROM positions WHERE status = 'OPEN' ORDER BY id DESC")
     open_pos = cursor.fetchall()
+    invested_capital = sum([r[2] for r in open_pos])
     
     # Posiciones cerradas recientes (últimas 10)
     cursor.execute("SELECT market_title, decision, invested_usd, pnl, timestamp FROM positions WHERE status = 'CLOSED' ORDER BY id DESC LIMIT 10")
     closed_pos = cursor.fetchall()
+    
+    # Win Rate
+    cursor.execute("SELECT COUNT(*) FROM positions WHERE status = 'CLOSED'")
+    total_closed = cursor.fetchone()[0]
+    cursor.execute("SELECT COUNT(*) FROM positions WHERE status = 'CLOSED' AND pnl > 0")
+    total_won = cursor.fetchone()[0]
+    
+    win_rate = 0
+    if total_closed > 0:
+        win_rate = (total_won / total_closed) * 100
     
     # PnL total
     cursor.execute("SELECT SUM(pnl) FROM positions WHERE status = 'CLOSED'")
@@ -165,6 +196,8 @@ def get_dashboard_stats():
     
     return {
         "balance": balance,
+        "invested_capital": invested_capital,
+        "win_rate": round(win_rate, 2),
         "total_pnl": total_pnl,
         "history": [{"balance": row[0], "time": row[1]} for row in history],
         "open_positions": [{"title": r[0], "decision": r[1], "invested": r[2], "shares": r[3], "time": r[4]} for r in open_pos],

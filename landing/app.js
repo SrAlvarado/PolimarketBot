@@ -1,4 +1,5 @@
 let balanceChart = null;
+let distributionChart = null;
 
 async function fetchStats() {
     try {
@@ -36,8 +37,46 @@ function updateKPIs(data) {
     pnlEl.textContent = `${data.total_pnl >= 0 ? '+' : ''}$${data.total_pnl.toFixed(2)}`;
     pnlEl.className = `kpi-value ${data.total_pnl >= 0 ? 'text-success' : 'text-danger'}`;
     
+    document.getElementById('kpi-winrate').textContent = `${data.win_rate}%`;
+    
     document.getElementById('kpi-open').textContent = data.open_positions.length;
     document.getElementById('active-count').textContent = data.open_positions.length;
+    
+    updateDistributionChart(data.balance, data.invested_capital);
+}
+
+function updateDistributionChart(balance, invested) {
+    const ctx = document.getElementById('distributionChart').getContext('2d');
+    
+    if (distributionChart) {
+        distributionChart.data.datasets[0].data = [balance, invested];
+        distributionChart.update();
+    } else {
+        distributionChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Liquidez (Efectivo)', 'Capital Invertido'],
+                datasets: [{
+                    data: [balance, invested],
+                    backgroundColor: ['#8a2be2', '#00ffff'],
+                    borderColor: ['rgba(0,0,0,0)', 'rgba(0,0,0,0)'],
+                    borderWidth: 2,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#f0f0f0', font: { family: 'Inter' } }
+                    }
+                }
+            }
+        });
+    }
 }
 
 function updateChart(history) {
