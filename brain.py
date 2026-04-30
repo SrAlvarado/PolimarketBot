@@ -48,7 +48,7 @@ def analyze_markets(portfolio_balance, markets_data):
     """
 
     try:
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-pro')
         response = model.generate_content(
             system_prompt + "\n\n" + user_prompt,
             generation_config=genai.GenerationConfig(
