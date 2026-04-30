@@ -79,7 +79,11 @@ def analyze_markets(portfolio_balance, markets_data, performance_history=""):
         print(f"Error parseando respuesta de Gemini (no es JSON válido): {e}")
         return []
     except Exception as e:
-        print(f"Error consultando a Gemini: {e}")
+        error_msg = str(e)
+        if "503" in error_msg or "UNAVAILABLE" in error_msg:
+            print("INFO: La API de Gemini está saturada temporalmente (503). Reintentando en el próximo ciclo.")
+        else:
+            print(f"Error consultando a Gemini: {e}")
         return []
 
 if __name__ == "__main__":
