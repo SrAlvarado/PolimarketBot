@@ -127,8 +127,8 @@ if __name__ == "__main__":
     while True:
         try:
             run_cycle()
-            # Esperar 5 minutos para el próximo ciclo
-            sleep_time = 300
+            # Esperar 60 segundos para el próximo ciclo
+            sleep_time = 60
             print_info(f"Esperando {sleep_time} segundos para el próximo ciclo...")
             time.sleep(sleep_time)
         except KeyboardInterrupt:

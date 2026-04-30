@@ -52,13 +52,20 @@ def analyze_markets(portfolio_balance, markets_data):
         response = model.generate_content(
             system_prompt + "\n\n" + user_prompt,
             generation_config=genai.GenerationConfig(
-                temperature=0.2,
-                response_mime_type="application/json"
+                temperature=0.2
             )
         )
         
-        # El SDK de python y mime_type nos aseguran que será JSON
-        result = json.loads(response.text)
+        # El SDK de python no asegura JSON estricto sin el mimetype, así que limpiamos posibles bloques markdown
+        text = response.text.strip()
+        if text.startswith('```json'):
+            text = text[7:]
+        elif text.startswith('```'):
+            text = text[3:]
+        if text.endswith('```'):
+            text = text[:-3]
+            
+        result = json.loads(text.strip())
         return result
     except json.JSONDecodeError as e:
         print(f"Error parseando respuesta de Gemini (no es JSON válido): {e}")
