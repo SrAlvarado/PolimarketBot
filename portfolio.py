@@ -38,6 +38,20 @@ def init_db():
         )
     """)
     
+    # Historial de balance
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS balance_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            balance REAL NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    
+    # Insertar el primer registro de historial si está vacío
+    cursor.execute("SELECT COUNT(*) FROM balance_history")
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("INSERT INTO balance_history (balance) SELECT balance FROM account WHERE id = 1")
+    
     conn.commit()
     conn.close()
 
@@ -53,6 +67,7 @@ def update_balance(amount_change):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("UPDATE account SET balance = balance + ? WHERE id = 1", (amount_change,))
+    cursor.execute("INSERT INTO balance_history (balance) SELECT balance FROM account WHERE id = 1")
     conn.commit()
     conn.close()
 
@@ -117,6 +132,44 @@ def get_total_pnl():
     total = cursor.fetchone()[0]
     conn.close()
     return total if total else 0.0
+
+def get_dashboard_stats():
+    """
+    Retorna un diccionario con todas las estadísticas para el Dashboard.
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Balance actual
+    cursor.execute("SELECT balance FROM account WHERE id = 1")
+    balance = cursor.fetchone()[0]
+    
+    # Historial de balance
+    cursor.execute("SELECT balance, timestamp FROM balance_history ORDER BY id ASC")
+    history = cursor.fetchall()
+    
+    # Posiciones abiertas
+    cursor.execute("SELECT market_title, decision, invested_usd, shares, timestamp FROM positions WHERE status = 'OPEN' ORDER BY id DESC")
+    open_pos = cursor.fetchall()
+    
+    # Posiciones cerradas recientes (últimas 10)
+    cursor.execute("SELECT market_title, decision, invested_usd, pnl, timestamp FROM positions WHERE status = 'CLOSED' ORDER BY id DESC LIMIT 10")
+    closed_pos = cursor.fetchall()
+    
+    # PnL total
+    cursor.execute("SELECT SUM(pnl) FROM positions WHERE status = 'CLOSED'")
+    total_pnl = cursor.fetchone()[0]
+    total_pnl = total_pnl if total_pnl else 0.0
+    
+    conn.close()
+    
+    return {
+        "balance": balance,
+        "total_pnl": total_pnl,
+        "history": [{"balance": row[0], "time": row[1]} for row in history],
+        "open_positions": [{"title": r[0], "decision": r[1], "invested": r[2], "shares": r[3], "time": r[4]} for r in open_pos],
+        "recent_trades": [{"title": r[0], "decision": r[1], "invested": r[2], "pnl": r[3], "time": r[4]} for r in closed_pos]
+    }
 
 if __name__ == "__main__":
     init_db()
